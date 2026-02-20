@@ -10,9 +10,24 @@ import { AvgCheckChart } from '@/components/dashboard/AvgCheckChart';
 import { CrossSalesHeatmap } from '@/components/dashboard/CrossSalesHeatmap';
 import { AdminPanel } from '@/components/dashboard/AdminPanel';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowUpDown, LogOut, Shield, User } from 'lucide-react';
+import { ArrowUpDown, LogOut, Shield, User, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import {
+  exportProductsToCSV,
+  exportProductsToJSON,
+  exportStatsToCSV,
+  exportCrossSalesToCSV,
+  generateFilename,
+} from '@/lib/export';
+import { toast } from 'sonner';
 
 type SortKey = 'revenue' | 'deals' | 'avgCheck';
 
@@ -28,6 +43,7 @@ const Index = () => {
   const [sortBy, setSortBy] = useState<SortKey>('revenue');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [showAllCards, setShowAllCards] = useState(false);
 
   // Manager restrictions: filter by their assigned region/category
   const availableProducts = useMemo(() => {
@@ -52,10 +68,39 @@ const Index = () => {
     return [...filteredProducts].sort((a, b) => b[sortBy] - a[sortBy]);
   }, [filteredProducts, sortBy]);
 
+  // Показываем TOP 5 или все
+  const displayedProducts = useMemo(() => {
+    return showAllCards ? sortedProducts : sortedProducts.slice(0, 5);
+  }, [sortedProducts, showAllCards]);
+
   const totalRevenue = useMemo(() => filteredProducts.reduce((s, p) => s + p.revenue, 0), [filteredProducts]);
   const productNames = useMemo(() => filteredProducts.map((p) => p.name), [filteredProducts]);
 
   const handleRefresh = useCallback(() => {}, []);
+
+  const handleExport = useCallback((format: 'csv' | 'json') => {
+    if (format === 'csv') {
+      exportProductsToCSV(filteredProducts, generateFilename('products'));
+    } else {
+      exportProductsToJSON(filteredProducts, generateFilename('products', 'json'));
+    }
+    toast.success(`Данные экспортированы в ${format.toUpperCase()}`);
+  }, [filteredProducts]);
+
+  const handleExportStats = useCallback(() => {
+    exportStatsToCSV(filteredProducts, generateFilename('stats'));
+    toast.success('Статистика экспортирована');
+  }, [filteredProducts]);
+
+  const handleExportCrossSales = useCallback(() => {
+    const accessibleCrossSales = crossSales.filter(cs => {
+      const p1 = filteredProducts.some(p => p.name === cs.product1);
+      const p2 = filteredProducts.some(p => p.name === cs.product2);
+      return p1 && p2;
+    });
+    exportCrossSalesToCSV(accessibleCrossSales, generateFilename('cross-sales'));
+    toast.success('Кросс-продажи экспортированы');
+  }, [filteredProducts]);
 
   const sortOptions: { key: SortKey; label: string }[] = [
     { key: 'revenue', label: 'Выручка' },
@@ -79,6 +124,32 @@ const Index = () => {
               </Badge>
               <span className="text-xs text-muted-foreground">{profile?.full_name || profile?.email}</span>
             </div>
+            
+            {/* Экспорт */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="text-xs">
+                  <Download className="w-3.5 h-3.5 mr-1" />
+                  Экспорт
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="text-xs">
+                <DropdownMenuItem onClick={() => handleExport('csv')}>
+                  Продукты (CSV)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport('json')}>
+                  Продукты (JSON)
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleExportStats}>
+                  Статистика (CSV)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportCrossSales}>
+                  Кросс-продажи (CSV)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {isAdmin && (
               <Button variant="outline" size="sm" onClick={() => setShowAdmin(!showAdmin)} className="text-xs">
                 <Shield className="w-3.5 h-3.5 mr-1" />
@@ -112,7 +183,9 @@ const Index = () => {
         {/* Product Cards */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-foreground">Продукты</h2>
+            <h2 className="text-sm font-semibold text-foreground">
+              Продукты {!showAllCards && filteredProducts.length > 5 && `(Топ 5 из ${filteredProducts.length})`}
+            </h2>
             <div className="flex items-center gap-1">
               <ArrowUpDown className="w-3 h-3 text-muted-foreground" />
               {sortOptions.map((opt) => (
@@ -132,12 +205,34 @@ const Index = () => {
           </div>
 
           {sortedProducts.length === 0 ? (
-            <div className="rounded-lg border border-border bg-card p-8 text-center text-muted-foreground text-sm">
-              Нет данных
+            <div className="rounded-lg border border-border bg-gradient-to-br from-card to-secondary/20 p-12 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="text-6xl">📭</div>
+              </div>
+              <h3 className="text-xl font-bold text-foreground mb-2">Нет данных</h3>
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                По вашим текущим фильтрам не найдено продуктов. Попробуйте изменить параметры фильтра или обновить данные.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setFilters({ period: 'month', categories: [], regions: [], clientTypes: [] })}
+                  className="font-semibold"
+                >
+                  Сбросить фильтры
+                </Button>
+                <Button 
+                  onClick={handleRefresh}
+                  className="font-semibold"
+                >
+                  Обновить
+                </Button>
+              </div>
             </div>
           ) : (
-            <div className="dashboard-grid">
-              {sortedProducts.map((product) => (
+            <div>
+              <div className="dashboard-grid">
+              {displayedProducts.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
@@ -146,19 +241,38 @@ const Index = () => {
                 />
               ))}
             </div>
+            
+            {/* Show All button */}
+            {filteredProducts.length > 5 && (
+              <div className="flex justify-center mt-4">
+                <Button
+                  variant={showAllCards ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setShowAllCards(!showAllCards)}
+                  className="text-xs"
+                >
+                  {showAllCards ? `Показать топ 5` : `Показать все (${filteredProducts.length})`}
+                </Button>
+              </div>
+            )}
+            </div>
           )}
         </div>
 
-        {/* Charts */}
-        <div className="grid grid-cols-2 gap-4">
-          <RevenueChart products={filteredProducts} />
-          <DealsChart products={filteredProducts} />
-        </div>
+        {/* Charts - только если есть данные */}
+        {sortedProducts.length > 0 && (
+          <>
+            <div className="grid grid-cols-2 gap-4">
+              <RevenueChart products={filteredProducts} />
+              <DealsChart products={filteredProducts} />
+            </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <AvgCheckChart products={filteredProducts} />
-          <CrossSalesHeatmap crossSales={crossSales} productNames={productNames} />
-        </div>
+            <div className="grid grid-cols-2 gap-4">
+              <AvgCheckChart products={filteredProducts} />
+              <CrossSalesHeatmap crossSales={crossSales} productNames={productNames} />
+            </div>
+          </>
+        )}
 
         {/* Modal */}
         <ProductDetailModal

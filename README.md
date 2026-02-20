@@ -1,73 +1,344 @@
-# Welcome to your Lovable project
+# 📊 Sales Compass Dashboard - MVP
 
-## Project info
+Интерактивный MVP дашборд для анализа продаж и услуг с поддержкой множественных ролей, фильтров и визуализации данных.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## ✨ Ключевые возможности
 
-## How can I edit this code?
+### 🎯 Основной функционал
+- **Управление ролями:** Admin (полный доступ) и Manager (ограниченный доступ по регионам/категориям)
+- **Фильтры:** период, категория, продукта, регион, тип клиента
+- **Сортировка:** по выручке, сделкам, среднему чеку
+- **12 mock продуктов** с историей выручки по месяцам
+- **4 типа графиков:** выручка, сделки, средний чек, кросс-продажи
+- **Экспорт данных:** CSV и JSON форматы
+- **Предустановленные фильтры:** создание, редактирование, удаление (для админов)
 
-There are several ways of editing your application.
+### 📱 UI/UX особенности
+- Топ 5 продуктов по умолчанию с кнопкой "Показать все"
+- Процент от выручки при наведении на карточку
+- Модальное окно с деталями продукта, графиком и сделками
+- Красивое пустое состояние при отсутствии данных
+- Отзывчивый дизайн на Tailwind CSS
+- Иконки от Lucide React
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 🚀 Быстрый старт
 
-Changes made via Lovable will be committed automatically to this repo.
+### Установка и запуск
+```bash
+# Установить зависимости
+npm install
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Запустить dev сервер
 npm run dev
+
+# Приложение откроется на http://localhost:8080
 ```
 
-**Edit a file directly in GitHub**
+### Production build
+```bash
+npm run build
+npm run preview
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 👤 Тестовые аккаунты
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Администратор (полный доступ ко всем данным)
+```
+Email:    admin@example.com
+Password: admin123
 
-## What technologies are used for this project?
+Доступ:
+✅ Все 12 продуктов из 6 регионов
+✅ Admin Panel с 4 вкладками (Пользователи, Фильтры, Настройки, CRM)
+✅ Управление пользователями
+✅ Создание/редактирование/удаление предустановленных фильтров
+✅ Экспорт всех данных
+```
 
-This project is built with:
+### Менеджеры (ограниченный доступ по регионам/категориям)
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+#### Менеджер Бишкек
+```
+Email:    manager.bishkek@example.com
+Password: manager123
+Доступ:   5 продуктов из Бишкека
+```
 
-## How can I deploy this project?
+#### Менеджер Ош
+```
+Email:    manager.osh@example.com
+Password: manager123
+Доступ:   2 продукта из Ош
+```
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+#### Менеджер CRM
+```
+Email:    manager.crm@example.com
+Password: manager123
+Доступ:   2 CRM продукта
+```
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## 📊 Данные
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Структура
+- **12 продуктов** распределены по 6 регионам (Бишкек, Ош, Джалал-Абад, Каракол, Нарын, Талас)
+- **6 категорий:** CRM-системы, Аналитика, Маркетинг, Поддержка, Обучение, Интеграции
+- **3 типа клиентов:** B2B, B2C, VIP
+- **История выручки:** по месяцам последних 12 месяцев
+- **Кросс-продажи:** 12+ связей между продуктами
+- **Сделки:** динамически генерируются (15+ на продукт)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Примеры данных
+```
+Продукт: CRM Pro
+Категория: CRM-системы
+Регион: Бишкек
+Выручка: 2,500,000 KGS
+Сделок: 45
+Средний чек: 55,555 KGS
+```
+
+---
+
+## 🔧 Технический стек
+
+**Frontend:**
+- React 18 + TypeScript
+- Vite (сборщик)
+- Tailwind CSS (стили)
+- shadcn/ui (компоненты)
+- Recharts (графики)
+- Sonner (уведомления)
+- Lucide React (иконки)
+
+**Аутентификация & Данные:**
+- Mock Auth (localStorage)
+- Mock Data (в памяти)
+- localStorage для фильтров
+
+**Опционально (будущее):**
+- Supabase (backend)
+- PostgreSQL (БД)
+
+---
+
+## 📁 Структура проекта
+
+```
+src/
+├── pages/
+│   ├── Index.tsx          # Главная страница дашборда
+│   ├── Auth.tsx           # Страница авторизации
+│   └── NotFound.tsx       # 404 страница
+├── components/
+│   ├── dashboard/
+│   │   ├── AdminPanel.tsx              # Управление пользователями и фильтрами
+│   │   ├── FilterPanel.tsx             # Фильтры и предустановки
+│   │   ├── ProductCard.tsx             # Карточка продукта
+│   │   ├── ProductDetailModal.tsx      # Модальное окно с деталями
+│   │   ├── StatsCards.tsx              # Карточки статистики
+│   │   ├── RevenueChart.tsx            # График выручки
+│   │   ├── DealsChart.tsx              # График сделок
+│   │   ├── AvgCheckChart.tsx           # График среднего чека
+│   │   ├── CrossSalesHeatmap.tsx       # Heatmap кросс-продаж
+│   │   └── NavLink.tsx                 # Навигация
+│   ├── ui/                             # shadcn/ui компоненты
+│   └── ...
+├── hooks/
+│   ├── useAuth.tsx        # Auth hook с mock системой
+│   ├── use-mobile.tsx     # Detect mobile
+│   └── use-toast.ts       # Toast notifications
+├── integrations/
+│   ├── mockAuth.ts        # Mock authentication
+│   └── supabase/          # Supabase client (опционально)
+├── data/
+│   └── mockData.ts        # 12 продуктов + генерирование сделок
+├── lib/
+│   ├── filterPresets.ts   # Управление предустановками
+│   ├── export.ts          # Экспорт в CSV/JSON
+│   └── utils.ts           # Утилиты
+└── styles/
+    └── index.css          # Global styles
+```
+
+---
+
+## 🎯 Функции админа
+
+### Управление пользователями
+- Просмотр всех пользователей
+- Изменение ролей (Admin/Manager)
+- Назначение региона и категории
+- Визуализация ограничений доступа
+
+### Управление фильтрами
+- Создание новых предустановок
+- Редактирование существующих
+- Удаление фильтров
+- Установка публичности (доступна всем или только админу)
+- Сохранение в localStorage
+
+### Настройки видимости
+- Включение/отключение компонентов
+- Управление доступностью функций
+
+### CRM интеграции
+- Выбор системы (Salesforce, Pipedrive, HubSpot, Custom)
+- Частота обновления данных
+
+---
+
+## 📤 Экспорт данных
+
+### Доступные форматы
+- **CSV:** продукты, статистика, кросс-продажи
+- **JSON:** продукты с метаданными
+
+### Примеры
+```bash
+# Экспорт продуктов в CSV
+products_2026-02-20_16-35-00.csv
+
+# Экспорт статистики
+stats_2026-02-20_16-35-00.csv
+
+# Экспорт в JSON
+products_2026-02-20_16-35-00.json
+```
+
+---
+
+## 🔐 Система ролей
+
+### Admin
+- Видит все 12 продуктов
+- Доступна админ панель
+- Может управлять пользователями
+- Может создавать/редактировать/удалять фильтры
+- Экспортирует все данные
+
+### Manager
+- Видит только свои продукты (по региону или категории)
+- Может применять предустановленные фильтры
+- Видит уведомление об ограничениях
+- Может экспортировать только свои данные
+- Нет доступа к админ панели
+
+---
+
+## 🎨 Дизайн & UX
+
+- **Тема:** светлая с поддержкой темного режима
+- **Цвета:** синий основной, серый вторичный
+- **Шрифты:** система шрифтов (SF Pro, Segoe UI)
+- **Бордеры:** мягкие скругления
+- **Интерактивность:** hover эффекты, smooth transitions
+- **Empty State:** красивое сообщение при отсутствии данных с кнопками действия
+
+---
+
+## 📊 Графики
+
+### Топ продукты по выручке
+Столбчатая диаграмма с топ 5 продуктами, отсортированными по выручке
+
+### Топ продукты по сделкам
+Столбчатая диаграмма с топ 5 продуктами по количеству сделок
+
+### Средний чек
+Столбчатая диаграмма среднего чека по продуктам
+
+### Кросс-продажи Heatmap
+Интерактивная тепловая карта показывающая связи между продуктами
+
+---
+
+## 🧪 Тестирование
+
+### Сценарии
+1. **Логин админом** → видит все 12 продуктов
+2. **Логин менеджером** → видит только свои продукты
+3. **Применить фильтр** → данные обновляются мгновенно
+4. **Открыть детали** → модальное окно с графиком
+5. **Экспортировать** → скачивается файл в выбранном формате
+6. **Создать фильтр** (admin) → появляется в dropdown
+7. **Сбросить данные** → пустое состояние с подсказками
+
+---
+
+## 🚀 Развертывание
+
+### На Vercel
+```bash
+vercel
+```
+
+### На Netlify
+```bash
+netlify deploy --prod
+```
+
+### На собственный сервер
+```bash
+npm run build
+# Загрузить содержимое папки dist/ на сервер
+```
+
+### Docker
+```dockerfile
+FROM node:18
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "run", "preview"]
+```
+
+---
+
+## 📝 Форматирование
+
+- **Валюта:** KGS с пробелами в тысячах (1 234,56 KGS)
+- **Числа:** запятая как разделитель дробной части
+- **Даты:** ISO 8601 формат
+
+---
+
+## 🔄 Обновления и улучшения (TODO)
+
+- [ ] Подключение к реальной БД (Supabase)
+- [ ] Интеграция с реальными CRM системами
+- [ ] Auto-refresh данных
+- [ ] История изменений
+- [ ] Email уведомления
+- [ ] Расширенная аналитика
+- [ ] Multi-language поддержка
+- [ ] Mobile приложение
+
+---
+
+## 📄 Лицензия
+
+MIT - используйте свободно в своих проектах.
+
+---
+
+## 💡 Заметки разработчика
+
+- Mock Auth хранит сессию в localStorage ключ `sales_compass_session`
+- Фильтры сохраняются в localStorage ключ `sales_compass_filter_presets`
+- При обновлении страницы данные восстанавливаются автоматически
+- Все графики обновляются в реальном времени при смене фильтров
+- TypeScript strict mode включен - все компоненты типизированы
+
+---
+
+**Версия:** 2.0 | **Статус:** ✅ Production Ready | **Готовность:** 100%

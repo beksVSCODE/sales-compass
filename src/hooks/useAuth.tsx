@@ -1,11 +1,8 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import type { User, Session } from '@supabase/supabase-js';
-
-type AppRole = 'admin' | 'manager';
+import { mockAuthClient, type AppRole } from '@/integrations/mockAuth';
 
 interface Profile {
-  id: string;
+  id?: string;
   user_id: string;
   email: string;
   full_name: string | null;
@@ -13,9 +10,29 @@ interface Profile {
   category: string | null;
 }
 
+interface MockUser {
+  id: string;
+  email: string;
+  full_name: string;
+  aud?: string;
+  confirmed_at?: string;
+  email_confirmed_at?: string;
+  phone_confirmed_at?: string | null;
+  last_sign_in_at?: string;
+  app_metadata?: Record<string, any>;
+  user_metadata?: Record<string, any>;
+  identities?: any[];
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface MockSession {
+  user: MockUser;
+}
+
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: MockUser | null;
+  session: MockSession | null;
   profile: Profile | null;
   role: AppRole | null;
   loading: boolean;
@@ -28,69 +45,113 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<MockUser | null>(null);
+  const [session, setSession] = useState<MockSession | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUserData = async (userId: string) => {
-    const [profileRes, roleRes] = await Promise.all([
-      supabase.from('profiles').select('*').eq('user_id', userId).single(),
-      supabase.from('user_roles').select('role').eq('user_id', userId).single(),
-    ]);
+  const fetchUserData = (userId: string) => {
+    const mockProfile = mockAuthClient.getCurrentProfile();
+    const mockRole = mockAuthClient.getCurrentRole();
 
-    if (profileRes.data) setProfile(profileRes.data as Profile);
-    if (roleRes.data) setRole(roleRes.data.role as AppRole);
+    if (mockProfile) {
+      setProfile({
+        id: userId,
+        ...mockProfile,
+      } as Profile);
+    }
+    if (mockRole) {
+      setRole(mockRole);
+    }
   };
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        if (session?.user) {
-          setTimeout(() => fetchUserData(session.user.id), 0);
-        } else {
-          setProfile(null);
-          setRole(null);
-        }
-        setLoading(false);
-      }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    const { data } = mockAuthClient.onAuthStateChange((_event: string, session: any) => {
       if (session?.user) {
+        const mockUser: MockUser = {
+          id: session.user.id,
+          email: session.user.email,
+          full_name: session.user.full_name,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        setSession(session);
+        setUser(mockUser);
         fetchUserData(session.user.id);
+      } else {
+        setSession(null);
+        setUser(null);
+        setProfile(null);
+        setRole(null);
       }
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    const { data: sessionData } = mockAuthClient.getSession();
+    if (sessionData?.session?.user) {
+      const mockUser: MockUser = {
+        id: sessionData.session.user.id,
+        email: sessionData.session.user.email,
+        full_name: sessionData.session.user.full_name,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setSession(sessionData.session);
+      setUser(mockUser);
+      fetchUserData(sessionData.session.user.id);
+    }
+    setLoading(false);
+
+    return () => {
+      // Cleanup
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error as Error | null };
+    const { error } = await mockAuthClient.signInWithPassword(email, password);
+    if (!error) {
+      const { data } = mockAuthClient.getSession();
+      if (data?.session?.user) {
+        const mockUser: MockUser = {
+          id: data.session.user.id,
+          email: data.session.user.email,
+          full_name: data.session.user.full_name,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        setSession(data.session);
+        setUser(mockUser);
+        fetchUserData(data.session.user.id);
+      }
+    }
+    return { error };
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: fullName },
-        emailRedirectTo: window.location.origin,
-      },
+    const { error } = await mockAuthClient.signUp(email, password, {
+      data: { full_name: fullName },
     });
-    return { error: error as Error | null };
+    if (!error) {
+      const { data } = mockAuthClient.getSession();
+      if (data?.session?.user) {
+        const mockUser: MockUser = {
+          id: data.session.user.id,
+          email: data.session.user.email,
+          full_name: data.session.user.full_name,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        setSession(data.session);
+        setUser(mockUser);
+        fetchUserData(data.session.user.id);
+      }
+    }
+    return { error };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await mockAuthClient.signOut();
     setUser(null);
     setSession(null);
     setProfile(null);
