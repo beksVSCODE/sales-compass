@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { products as allProducts, crossSales, type Filters, type Product } from '@/data/mockData';
+import { products as allProducts, crossSales, type Filters, type Product, SIMULATE_DATA_ERROR } from '@/data/mockData';
 import { FilterPanel } from '@/components/dashboard/FilterPanel';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { ProductCard } from '@/components/dashboard/ProductCard';
@@ -9,6 +9,9 @@ import { DealsChart } from '@/components/dashboard/DealsChart';
 import { AvgCheckChart } from '@/components/dashboard/AvgCheckChart';
 import { CrossSalesHeatmap } from '@/components/dashboard/CrossSalesHeatmap';
 import { AdminPanel } from '@/components/dashboard/AdminPanel';
+import { ErrorState } from '@/components/dashboard/ErrorState';
+import { ErrorCard } from '@/components/dashboard/ErrorCard';
+import { NoResultsState } from '@/components/dashboard/NoResultsState';
 import { useAuth } from '@/hooks/useAuth';
 import { ArrowUpDown, LogOut, Shield, User, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -44,6 +47,9 @@ const Index = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showAllCards, setShowAllCards] = useState(false);
+  const [dataError, setDataError] = useState<string | null>(
+    SIMULATE_DATA_ERROR ? 'Симуляция ошибки: Не удалось подключиться к серверу данных' : null
+  );
 
   // Manager restrictions: filter by their assigned region/category
   const availableProducts = useMemo(() => {
@@ -76,7 +82,19 @@ const Index = () => {
   const totalRevenue = useMemo(() => filteredProducts.reduce((s, p) => s + p.revenue, 0), [filteredProducts]);
   const productNames = useMemo(() => filteredProducts.map((p) => p.name), [filteredProducts]);
 
-  const handleRefresh = useCallback(() => {}, []);
+  const handleRefresh = useCallback(() => {
+    try {
+      if (!allProducts || allProducts.length === 0) {
+        setDataError('Данные недоступны. Пожалуйста, попробуйте позже.');
+        return;
+      }
+      setDataError(null);
+      toast.success('Данные обновлены');
+    } catch (error) {
+      setDataError('Ошибка при обновлении данных');
+      toast.error('Не удалось обновить данные');
+    }
+  }, []);
 
   const handleExport = useCallback((format: 'csv' | 'json') => {
     if (format === 'csv') {
@@ -165,121 +183,117 @@ const Index = () => {
         {/* Admin Panel */}
         {isAdmin && showAdmin && <AdminPanel />}
 
-        {/* Manager restriction notice */}
-        {!isAdmin && (profile?.region || profile?.category) && (
-          <div className="rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground">
-            Доступ ограничен: {profile?.region && `регион — ${profile.region}`}
-            {profile?.region && profile?.category && ', '}
-            {profile?.category && `категория — ${profile.category}`}
-          </div>
+        {/* Ошибка загрузки данных */}
+        {dataError && (
+          <ErrorState
+            title="Ошибка загрузки данных"
+            description={dataError}
+            onRetry={handleRefresh}
+            onHome={() => window.location.reload()}
+          />
         )}
 
-        {/* Filters */}
-        <FilterPanel filters={filters} onFiltersChange={setFilters} onRefresh={handleRefresh} />
-
-        {/* Stats */}
-        <StatsCards products={filteredProducts} />
-
-        {/* Product Cards */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-foreground">
-              Продукты {!showAllCards && filteredProducts.length > 5 && `(Топ 5 из ${filteredProducts.length})`}
-            </h2>
-            <div className="flex items-center gap-1">
-              <ArrowUpDown className="w-3 h-3 text-muted-foreground" />
-              {sortOptions.map((opt) => (
-                <button
-                  key={opt.key}
-                  onClick={() => setSortBy(opt.key)}
-                  className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                    sortBy === opt.key
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {sortedProducts.length === 0 ? (
-            <div className="rounded-lg border border-border bg-gradient-to-br from-card to-secondary/20 p-12 text-center">
-              <div className="flex justify-center mb-4">
-                <div className="text-6xl">📭</div>
-              </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">Нет данных</h3>
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                По вашим текущим фильтрам не найдено продуктов. Попробуйте изменить параметры фильтра или обновить данные.
-              </p>
-              <div className="flex gap-3 justify-center">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setFilters({ period: 'month', categories: [], regions: [], clientTypes: [] })}
-                  className="font-semibold"
-                >
-                  Сбросить фильтры
-                </Button>
-                <Button 
-                  onClick={handleRefresh}
-                  className="font-semibold"
-                >
-                  Обновить
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <div className="dashboard-grid">
-              {displayedProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  totalRevenue={totalRevenue}
-                  onClick={setSelectedProduct}
-                />
-              ))}
-            </div>
-            
-            {/* Show All button */}
-            {filteredProducts.length > 5 && (
-              <div className="flex justify-center mt-4">
-                <Button
-                  variant={showAllCards ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setShowAllCards(!showAllCards)}
-                  className="text-xs"
-                >
-                  {showAllCards ? `Показать топ 5` : `Показать все (${filteredProducts.length})`}
-                </Button>
+        {/* Если нет ошибки, показываем основной контент */}
+        {!dataError && (
+          <>
+            {/* Manager restriction notice */}
+            {!isAdmin && (profile?.region || profile?.category) && (
+              <div className="rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground">
+                Доступ ограничен: {profile?.region && `регион — ${profile.region}`}
+                {profile?.region && profile?.category && ', '}
+                {profile?.category && `категория — ${profile.category}`}
               </div>
             )}
-            </div>
-          )}
-        </div>
 
-        {/* Charts - только если есть данные */}
-        {sortedProducts.length > 0 && (
-          <>
-            <div className="grid grid-cols-2 gap-4">
-              <RevenueChart products={filteredProducts} />
-              <DealsChart products={filteredProducts} />
+            {/* Filters */}
+            <FilterPanel filters={filters} onFiltersChange={setFilters} onRefresh={handleRefresh} />
+
+            {/* Stats */}
+            <StatsCards products={filteredProducts} />
+
+            {/* Product Cards */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-semibold text-foreground">
+                  Продукты {!showAllCards && filteredProducts.length > 5 && `(Топ 5 из ${filteredProducts.length})`}
+                </h2>
+                <div className="flex items-center gap-1">
+                  <ArrowUpDown className="w-3 h-3 text-muted-foreground" />
+                  {sortOptions.map((opt) => (
+                    <button
+                      key={opt.key}
+                      onClick={() => setSortBy(opt.key)}
+                      className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                        sortBy === opt.key
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {sortedProducts.length === 0 ? (
+                <NoResultsState 
+                  onReset={() => setFilters({ period: 'month', categories: [], regions: [], clientTypes: [] })}
+                  title="Нет данных"
+                  description="По вашим текущим фильтрам не найдено продуктов. Попробуйте изменить параметры фильтра или сбросить фильтры."
+                />
+              ) : (
+                <div>
+                  <div className="dashboard-grid">
+                  {displayedProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      totalRevenue={totalRevenue}
+                      onClick={setSelectedProduct}
+                    />
+                  ))}
+                </div>
+                
+                {/* Show All button */}
+                {filteredProducts.length > 5 && (
+                  <div className="flex justify-center mt-4">
+                    <Button
+                      variant={showAllCards ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setShowAllCards(!showAllCards)}
+                      className="text-xs"
+                    >
+                      {showAllCards ? `Показать топ 5` : `Показать все (${filteredProducts.length})`}
+                    </Button>
+                  </div>
+                )}
+                </div>
+              )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <AvgCheckChart products={filteredProducts} />
-              <CrossSalesHeatmap crossSales={crossSales} productNames={productNames} />
-            </div>
+            {/* Charts - только если есть данные */}
+            {sortedProducts.length > 0 && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <RevenueChart products={filteredProducts} />
+                  <DealsChart products={filteredProducts} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <AvgCheckChart products={filteredProducts} />
+                  <CrossSalesHeatmap crossSales={crossSales} productNames={productNames} />
+                </div>
+              </>
+            )}
+
+            {/* Modal */}
+            <ProductDetailModal
+              product={selectedProduct}
+              open={!!selectedProduct}
+              onClose={() => setSelectedProduct(null)}
+            />
           </>
         )}
-
-        {/* Modal */}
-        <ProductDetailModal
-          product={selectedProduct}
-          open={!!selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-        />
       </div>
     </div>
   );
