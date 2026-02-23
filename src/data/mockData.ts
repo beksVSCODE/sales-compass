@@ -80,73 +80,73 @@ const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'И�
 export const products: Product[] = [
     // Бишкек - CRM-системы (B2B)
     {
-        id: '1', name: 'УправоСофт Премиум', category: 'CRM-системы', revenue: 4587320, deals: 127,
+        id: '1', name: 'Управо Софт Премиум', category: 'CRM-системы', revenue: 4587320, deals: 127,
         avgCheck: 36120.63, region: 'Бишкек', clientType: 'B2B',
         monthlyRevenue: months.map((m, i) => ({ month: m, revenue: 300000 + Math.random() * 200000, deals: 8 + Math.floor(Math.random() * 10) })),
     },
     // Бишкек - Аналитика (B2B, VIP)
     {
-        id: '2', name: 'АналитикаПро', category: 'Аналитика', revenue: 3214780, deals: 89,
+        id: '2', name: 'Аналитика Про', category: 'Аналитика', revenue: 3214780, deals: 89,
         avgCheck: 36120.00, region: 'Бишкек', clientType: 'B2B',
         monthlyRevenue: months.map((m) => ({ month: m, revenue: 200000 + Math.random() * 150000, deals: 5 + Math.floor(Math.random() * 8) })),
     },
     // Ош - Маркетинг (B2C)
     {
-        id: '3', name: 'МаркетПакет', category: 'Маркетинг', revenue: 2876450, deals: 203,
+        id: '3', name: 'Маркет Пакет', category: 'Маркетинг', revenue: 2876450, deals: 203,
         avgCheck: 14169.21, region: 'Ош', clientType: 'B2C',
         monthlyRevenue: months.map((m) => ({ month: m, revenue: 180000 + Math.random() * 120000, deals: 12 + Math.floor(Math.random() * 15) })),
     },
     // Джалал-Абад - Поддержка (B2B)
     {
-        id: '4', name: 'СуппортСтол', category: 'Поддержка', revenue: 1945600, deals: 156,
+        id: '4', name: 'Суппорт Стол', category: 'Поддержка', revenue: 1945600, deals: 156,
         avgCheck: 12472.82, region: 'Джалал-Абад', clientType: 'B2B',
         monthlyRevenue: months.map((m) => ({ month: m, revenue: 120000 + Math.random() * 100000, deals: 10 + Math.floor(Math.random() * 12) })),
     },
     // Каракол - Обучение (B2C)
     {
-        id: '5', name: 'ОбучаемПлатформа', category: 'Обучение', revenue: 1678900, deals: 312,
+        id: '5', name: 'Обучаем Платформа', category: 'Обучение', revenue: 1678900, deals: 312,
         avgCheck: 5381.09, region: 'Каракол', clientType: 'B2C',
         monthlyRevenue: months.map((m) => ({ month: m, revenue: 100000 + Math.random() * 80000, deals: 20 + Math.floor(Math.random() * 20) })),
     },
     // Бишкек - Интеграции (VIP)
     {
-        id: '6', name: 'ПортальПро', category: 'Интеграции', revenue: 2345000, deals: 67,
+        id: '6', name: 'Порталь Про', category: 'Интеграции', revenue: 2345000, deals: 67,
         avgCheck: 35000.00, region: 'Бишкек', clientType: 'VIP',
         monthlyRevenue: months.map((m) => ({ month: m, revenue: 150000 + Math.random() * 130000, deals: 3 + Math.floor(Math.random() * 6) })),
     },
     // Нарын - CRM-системы (B2C)
     {
-        id: '7', name: 'УправоСофт Лайт', category: 'CRM-системы', revenue: 987650, deals: 245,
+        id: '7', name: 'Управо Софт Лайт', category: 'CRM-системы', revenue: 987650, deals: 245,
         avgCheck: 4031.43, region: 'Нарын', clientType: 'B2C',
         monthlyRevenue: months.map((m) => ({ month: m, revenue: 60000 + Math.random() * 50000, deals: 15 + Math.floor(Math.random() * 18) })),
     },
     // Бишкек - Аналитика (VIP)
     {
-        id: '8', name: 'ДашбордДанных', category: 'Аналитика', revenue: 3890200, deals: 78,
+        id: '8', name: 'Дашборд Данных', category: 'Аналитика', revenue: 3890200, deals: 78,
         avgCheck: 49874.36, region: 'Бишкек', clientType: 'VIP',
         monthlyRevenue: months.map((m) => ({ month: m, revenue: 250000 + Math.random() * 180000, deals: 4 + Math.floor(Math.random() * 7) })),
     },
     // Ош - Интеграции (B2B)
     {
-        id: '9', name: 'ХабИнтеграции', category: 'Интеграции', revenue: 1567890, deals: 43,
+        id: '9', name: 'Хаб Интеграции', category: 'Интеграции', revenue: 1567890, deals: 43,
         avgCheck: 36462.09, region: 'Ош', clientType: 'B2B',
         monthlyRevenue: months.map((m) => ({ month: m, revenue: 90000 + Math.random() * 70000, deals: 2 + Math.floor(Math.random() * 5) })),
     },
     // Бишкек - Маркетинг (B2B)
     {
-        id: '10', name: 'АвтоМаркет', category: 'Маркетинг', revenue: 2345670, deals: 156,
+        id: '10', name: 'Авто Маркет', category: 'Маркетинг', revenue: 2345670, deals: 156,
         avgCheck: 15036.35, region: 'Бишкек', clientType: 'B2B',
         monthlyRevenue: months.map((m) => ({ month: m, revenue: 140000 + Math.random() * 100000, deals: 9 + Math.floor(Math.random() * 12) })),
     },
     // Талас - Поддержка (B2C)
     {
-        id: '11', name: 'СуппортЛайт', category: 'Поддержка', revenue: 876543, deals: 287,
+        id: '11', name: 'Суппорт Лайт', category: 'Поддержка', revenue: 876543, deals: 287,
         avgCheck: 3054.99, region: 'Талас', clientType: 'B2C',
         monthlyRevenue: months.map((m) => ({ month: m, revenue: 50000 + Math.random() * 40000, deals: 18 + Math.floor(Math.random() * 22) })),
     },
     // Каракол - Аналитика (B2C)
     {
-        id: '12', name: 'АналитикаЛайт', category: 'Аналитика', revenue: 1234567, deals: 234,
+        id: '12', name: 'Аналитика Лайт', category: 'Аналитика', revenue: 1234567, deals: 234,
         avgCheck: 5275.37, region: 'Каракол', clientType: 'B2C',
         monthlyRevenue: months.map((m) => ({ month: m, revenue: 70000 + Math.random() * 60000, deals: 14 + Math.floor(Math.random() * 18) })),
     },
@@ -154,22 +154,22 @@ export const products: Product[] = [
 
 export const crossSales: CrossSale[] = [
     // Бишкек паттерны
-    { product1: 'УправоСофт Премиум', product2: 'АналитикаПро', count: 45 },
-    { product1: 'УправоСофт Премиум', product2: 'ПортальПро', count: 29 },
-    { product1: 'УправоСофт Премиум', product2: 'АвтоМаркет', count: 34 },
-    { product1: 'АналитикаПро', product2: 'ДашбордДанных', count: 52 },
-    { product1: 'ПортальПро', product2: 'ДашбордДанных', count: 33 },
-    { product1: 'ПортальПро', product2: 'АналитикаПро', count: 28 },
+    { product1: 'Управо Софт Премиум', product2: 'Аналитика Про', count: 45 },
+    { product1: 'Управо Софт Премиум', product2: 'Порталь Про', count: 29 },
+    { product1: 'Управо Софт Премиум', product2: 'Авто Маркет', count: 34 },
+    { product1: 'Аналитика Про', product2: 'Дашборд Данных', count: 52 },
+    { product1: 'Порталь Про', product2: 'Дашборд Данных', count: 33 },
+    { product1: 'Порталь Про', product2: 'Аналитика Про', count: 28 },
     // Ош паттерны
-    { product1: 'МаркетПакет', product2: 'ХабИнтеграции', count: 27 },
-    { product1: 'ХабИнтеграции', product2: 'МаркетПакет', count: 19 },
+    { product1: 'Маркет Пакет', product2: 'Хаб Интеграции', count: 27 },
+    { product1: 'Хаб Интеграции', product2: 'Маркет Пакет', count: 19 },
     // Кросс-региональные
-    { product1: 'УправоСофт Премиум', product2: 'СуппортСтол', count: 38 },
-    { product1: 'МаркетПакет', product2: 'ОбучаемПлатформа', count: 23 },
-    { product1: 'СуппортСтол', product2: 'УправоСофт Лайт', count: 41 },
-    { product1: 'УправоСофт Лайт', product2: 'ОбучаемПлатформа', count: 22 },
-    { product1: 'ОбучаемПлатформа', product2: 'СуппортЛайт', count: 18 },
-    { product1: 'АналитикаЛайт', product2: 'ОбучаемПлатформа', count: 16 },
+    { product1: 'Управо Софт Премиум', product2: 'Суппорт Стол', count: 38 },
+    { product1: 'Маркет Пакет', product2: 'Обучаем Платформа', count: 23 },
+    { product1: 'Суппорт Стол', product2: 'Управо Софт Лайт', count: 41 },
+    { product1: 'Управо Софт Лайт', product2: 'Обучаем Платформа', count: 22 },
+    { product1: 'Обучаем Платформа', product2: 'Суппорт Лайт', count: 18 },
+    { product1: 'Аналитика Лайт', product2: 'Обучаем Платформа', count: 16 },
 ];
 
 /**
