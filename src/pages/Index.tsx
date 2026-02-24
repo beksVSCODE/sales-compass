@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { products as allProducts, crossSales, type Filters, type Product, SIMULATE_DATA_ERROR } from '@/data/mockData';
+import { products as allProducts, crossSales, months, type Filters, type Product, SIMULATE_DATA_ERROR } from '@/data/mockData';
 import { FilterPanel } from '@/components/dashboard/FilterPanel';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { ProductCard } from '@/components/dashboard/ProductCard';
@@ -42,6 +42,7 @@ const Index = () => {
     categories: [],
     regions: [],
     clientTypes: [],
+    dateRange: { startDate: null, endDate: null },
   });
   const [sortBy, setSortBy] = useState<SortKey>('revenue');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -70,17 +71,60 @@ const Index = () => {
     });
   }, [filters, availableProducts]);
 
+  const monthIndexByLabel = useMemo(() => new Map(months.map((m, i) => [m, i])), []);
+
+  const normalizedRange = useMemo(() => {
+    let start = filters.dateRange.startDate ? new Date(filters.dateRange.startDate) : null;
+    let end = filters.dateRange.endDate ? new Date(filters.dateRange.endDate) : null;
+    if (start) start.setHours(0, 0, 0, 0);
+    if (end) end.setHours(23, 59, 59, 999);
+    if (start && end && start > end) {
+      const tmp = start;
+      start = end;
+      end = tmp;
+    }
+    return { start, end, isActive: !!(start || end) };
+  }, [filters.dateRange]);
+
+  const reportProducts = useMemo(() => {
+    if (!normalizedRange.isActive) return filteredProducts;
+
+    const currentYear = new Date().getFullYear();
+    return filteredProducts.map((p) => {
+      const filteredMonthlyRevenue = p.monthlyRevenue.filter((entry) => {
+        const monthIndex = monthIndexByLabel.get(entry.month);
+        if (monthIndex === undefined) return false;
+        const entryDate = new Date(currentYear, monthIndex, 1);
+        if (normalizedRange.start && entryDate < normalizedRange.start) return false;
+        if (normalizedRange.end && entryDate > normalizedRange.end) return false;
+        return true;
+      });
+
+      const revenue = filteredMonthlyRevenue.reduce((s, m) => s + m.revenue, 0);
+      const deals = filteredMonthlyRevenue.reduce((s, m) => s + m.deals, 0);
+      const avgCheck = deals > 0 ? revenue / deals : 0;
+
+      return {
+        ...p,
+        revenue,
+        deals,
+        avgCheck,
+        monthlyRevenue: filteredMonthlyRevenue,
+      };
+    });
+  }, [filteredProducts, monthIndexByLabel, normalizedRange]);
+
   const sortedProducts = useMemo(() => {
-    return [...filteredProducts].sort((a, b) => b[sortBy] - a[sortBy]);
-  }, [filteredProducts, sortBy]);
+    return [...reportProducts].sort((a, b) => b[sortBy] - a[sortBy]);
+  }, [reportProducts, sortBy]);
 
   // Показываем TOP 5 или все
   const displayedProducts = useMemo(() => {
     return showAllCards ? sortedProducts : sortedProducts.slice(0, 5);
   }, [sortedProducts, showAllCards]);
 
-  const totalRevenue = useMemo(() => filteredProducts.reduce((s, p) => s + p.revenue, 0), [filteredProducts]);
-  const productNames = useMemo(() => filteredProducts.map((p) => p.name), [filteredProducts]);
+  const totalRevenue = useMemo(() => reportProducts.reduce((s, p) => s + p.revenue, 0), [reportProducts]);
+  const productNames = useMemo(() => reportProducts.map((p) => p.name), [reportProducts]);
 
   const handleRefresh = useCallback(() => {
     try {
@@ -98,27 +142,27 @@ const Index = () => {
 
   const handleExport = useCallback((format: 'csv' | 'json') => {
     if (format === 'csv') {
-      exportProductsToCSV(filteredProducts, generateFilename('products'));
+      exportProductsToCSV(reportProducts, generateFilename('products'));
     } else {
-      exportProductsToJSON(filteredProducts, generateFilename('products', 'json'));
+      exportProductsToJSON(reportProducts, generateFilename('products', 'json'));
     }
     toast.success(`Данные экспортированы в ${format.toUpperCase()}`);
-  }, [filteredProducts]);
+  }, [reportProducts]);
 
   const handleExportStats = useCallback(() => {
-    exportStatsToCSV(filteredProducts, generateFilename('stats'));
+    exportStatsToCSV(reportProducts, generateFilename('stats'));
     toast.success('Статистика экспортирована');
-  }, [filteredProducts]);
+  }, [reportProducts]);
 
   const handleExportCrossSales = useCallback(() => {
     const accessibleCrossSales = crossSales.filter(cs => {
-      const p1 = filteredProducts.some(p => p.name === cs.product1);
-      const p2 = filteredProducts.some(p => p.name === cs.product2);
+      const p1 = reportProducts.some(p => p.name === cs.product1);
+      const p2 = reportProducts.some(p => p.name === cs.product2);
       return p1 && p2;
     });
     exportCrossSalesToCSV(accessibleCrossSales, generateFilename('cross-sales'));
     toast.success('Кросс-продажи экспортированы');
-  }, [filteredProducts]);
+  }, [reportProducts]);
 
   const sortOptions: { key: SortKey; label: string }[] = [
     { key: 'revenue', label: 'Выручка' },
@@ -209,13 +253,13 @@ const Index = () => {
             <FilterPanel filters={filters} onFiltersChange={setFilters} onRefresh={handleRefresh} />
 
             {/* Stats */}
-            <StatsCards products={filteredProducts} />
+            <StatsCards products={reportProducts} />
 
             {/* Product Cards */}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-semibold text-foreground">
-                  Продукты {!showAllCards && filteredProducts.length > 5 && `(Топ 5 из ${filteredProducts.length})`}
+                  Продукты {!showAllCards && reportProducts.length > 5 && `(Топ 5 из ${reportProducts.length})`}
                 </h2>
                 <div className="flex items-center gap-1">
                   <ArrowUpDown className="w-3 h-3 text-muted-foreground" />
@@ -237,7 +281,7 @@ const Index = () => {
 
               {sortedProducts.length === 0 ? (
                 <NoResultsState 
-                  onReset={() => setFilters({ period: 'month', categories: [], regions: [], clientTypes: [] })}
+                  onReset={() => setFilters({ period: 'month', categories: [], regions: [], clientTypes: [], dateRange: { startDate: null, endDate: null } })}
                   title="Нет данных"
                   description="По вашим текущим фильтрам не найдено продуктов. Попробуйте изменить параметры фильтра или сбросить фильтры."
                 />
@@ -255,7 +299,7 @@ const Index = () => {
                 </div>
                 
                 {/* Show All button */}
-                {filteredProducts.length > 5 && (
+                {reportProducts.length > 5 && (
                   <div className="flex justify-center mt-4">
                     <Button
                       variant={showAllCards ? 'default' : 'outline'}
@@ -263,7 +307,7 @@ const Index = () => {
                       onClick={() => setShowAllCards(!showAllCards)}
                       className="text-xs"
                     >
-                      {showAllCards ? `Показать топ 5` : `Показать все (${filteredProducts.length})`}
+                      {showAllCards ? `Показать топ 5` : `Показать все (${reportProducts.length})`}
                     </Button>
                   </div>
                 )}
@@ -275,12 +319,12 @@ const Index = () => {
             {sortedProducts.length > 0 && (
               <>
                 <div className="grid grid-cols-2 gap-4">
-                  <RevenueChart products={filteredProducts} />
-                  <DealsChart products={filteredProducts} />
+                  <RevenueChart products={reportProducts} />
+                  <DealsChart products={reportProducts} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <AvgCheckChart products={filteredProducts} />
+                  <AvgCheckChart products={reportProducts} />
                   <CrossSalesHeatmap crossSales={crossSales} productNames={productNames} />
                 </div>
               </>

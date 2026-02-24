@@ -12,6 +12,10 @@ export interface FilterPreset {
         categories: string[];
         regions: string[];
         clientTypes: string[];
+        dateRange: {
+            startDate: string | null;
+            endDate: string | null;
+        };
     };
     createdBy: string;
     createdAt: Date;
@@ -32,6 +36,7 @@ let filterPresets: FilterPreset[] = [
             categories: [],
             regions: [],
             clientTypes: ['B2B'],
+            dateRange: { startDate: null, endDate: null },
         },
         createdBy: 'admin@example.com',
         createdAt: new Date('2026-02-01'),
@@ -46,6 +51,7 @@ let filterPresets: FilterPreset[] = [
             categories: [],
             regions: [],
             clientTypes: [],
+            dateRange: { startDate: null, endDate: null },
         },
         createdBy: 'admin@example.com',
         createdAt: new Date('2026-02-01'),
@@ -60,6 +66,7 @@ let filterPresets: FilterPreset[] = [
             categories: ['CRM-системы'],
             regions: [],
             clientTypes: [],
+            dateRange: { startDate: null, endDate: null },
         },
         createdBy: 'admin@example.com',
         createdAt: new Date('2026-02-01'),
@@ -93,6 +100,15 @@ export class FilterPresetsManager {
      */
     static getPublic(): FilterPreset[] {
         return this.getAll().filter(f => f.isPublic);
+    }
+
+    /**
+     * Получить фильтры для пользователя
+     */
+    static getForUser(email?: string | null): FilterPreset[] {
+        const all = this.getAll();
+        if (!email) return all.filter(f => f.isPublic);
+        return all.filter(f => f.isPublic || f.createdBy === email);
     }
 
     /**
@@ -187,6 +203,7 @@ export class FilterPresetsManager {
                     categories: [],
                     regions: [],
                     clientTypes: ['B2B'],
+                    dateRange: { startDate: null, endDate: null },
                 },
                 createdBy: 'admin@example.com',
                 createdAt: new Date('2026-02-01'),
@@ -201,6 +218,7 @@ export class FilterPresetsManager {
                     categories: [],
                     regions: [],
                     clientTypes: [],
+                    dateRange: { startDate: null, endDate: null },
                 },
                 createdBy: 'admin@example.com',
                 createdAt: new Date('2026-02-01'),
@@ -215,6 +233,7 @@ export class FilterPresetsManager {
                     categories: ['CRM-системы'],
                     regions: [],
                     clientTypes: [],
+                    dateRange: { startDate: null, endDate: null },
                 },
                 createdBy: 'admin@example.com',
                 createdAt: new Date('2026-02-01'),

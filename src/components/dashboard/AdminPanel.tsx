@@ -26,6 +26,10 @@ interface FilterFormState {
   selectedCategories: string[];
   selectedRegions: string[];
   selectedClientTypes: string[];
+  dateRange: {
+    startDate: string | null;
+    endDate: string | null;
+  };
   isPublic: boolean;
 }
 
@@ -62,6 +66,7 @@ export function AdminPanel() {
     selectedCategories: [],
     selectedRegions: [],
     selectedClientTypes: [],
+    dateRange: { startDate: null, endDate: null },
     isPublic: true,
   });
   const [showFilterForm, setShowFilterForm] = useState(false);
@@ -109,6 +114,7 @@ export function AdminPanel() {
           categories: filterForm.selectedCategories,
           regions: filterForm.selectedRegions,
           clientTypes: filterForm.selectedClientTypes,
+          dateRange: filterForm.dateRange,
         },
         isPublic: filterForm.isPublic,
       });
@@ -123,6 +129,7 @@ export function AdminPanel() {
           categories: filterForm.selectedCategories,
           regions: filterForm.selectedRegions,
           clientTypes: filterForm.selectedClientTypes,
+          dateRange: filterForm.dateRange,
         },
         'admin@example.com',
         filterForm.description,
@@ -144,6 +151,7 @@ export function AdminPanel() {
       selectedCategories: preset.filters.categories,
       selectedRegions: preset.filters.regions,
       selectedClientTypes: preset.filters.clientTypes,
+      dateRange: preset.filters.dateRange ?? { startDate: null, endDate: null },
       isPublic: preset.isPublic,
     });
     setShowFilterForm(true);
@@ -165,6 +173,7 @@ export function AdminPanel() {
       selectedCategories: [],
       selectedRegions: [],
       selectedClientTypes: [],
+      dateRange: { startDate: null, endDate: null },
       isPublic: true,
     });
     setShowFilterForm(false);

@@ -29,6 +29,10 @@ export interface Filters {
     categories: string[];
     regions: string[];
     clientTypes: string[];
+    dateRange: {
+        startDate: string | null;
+        endDate: string | null;
+    };
 }
 
 export const categories = ['CRM-системы', 'Аналитика', 'Маркетинг', 'Поддержка', 'Обучение', 'Интеграции'];
@@ -74,7 +78,7 @@ export const testAccounts = {
     },
 };
 
-const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+export const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
 
 // Full product catalog for ADMIN
 export const products: Product[] = [
