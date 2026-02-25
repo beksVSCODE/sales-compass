@@ -3,7 +3,7 @@
  * Используется для локального тестирования без подключения к Supabase
  */
 
-export type AppRole = 'admin' | 'manager';
+export type AppRole = 'admin' | 'manager' | 'ceo';
 
 export interface MockUser {
     id: string;
@@ -26,6 +26,17 @@ export interface MockSession {
 
 // Тестовые пользователи
 export const mockUsers: Record<string, { password: string; profile: Omit<MockProfile, 'id'>; role: AppRole }> = {
+    'ceo@example.com': {
+        password: 'ceo123',
+        profile: {
+            user_id: 'ceo-001',
+            email: 'ceo@example.com',
+            full_name: 'Генеральный Директор',
+            region: null,     // CEO видит все регионы
+            category: null,   // CEO видит все категории
+        },
+        role: 'ceo',
+    },
     'admin@example.com': {
         password: 'admin123',
         profile: {

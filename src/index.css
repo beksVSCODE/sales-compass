@@ -1,93 +1,257 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 220 14% 96%;
-    --foreground: 222 47% 11%;
+    :root {
+        --background: 224 20% 97%;
+        --foreground: 224 40% 10%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+        --card: 0 0% 100%;
+        --card-foreground: 224 40% 10%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 224 40% 10%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
+        --primary: 221 83% 53%;
+        --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 92%;
-    --secondary-foreground: 222 47% 11%;
+        --secondary: 224 20% 93%;
+        --secondary-foreground: 224 40% 10%;
 
-    --muted: 220 14% 94%;
-    --muted-foreground: 220 9% 46%;
+        --muted: 224 20% 94%;
+        --muted-foreground: 224 10% 48%;
 
-    --accent: 173 58% 39%;
-    --accent-foreground: 0 0% 100%;
+        --accent: 262 80% 60%;
+        --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 60%;
+        --border: 224 15% 89%;
+        --input: 224 15% 89%;
+        --ring: 221 83% 53%;
 
-    --radius: 0.5rem;
+        --radius: 0.75rem;
 
-    --chart-1: 217 91% 60%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 262 52% 56%;
-    --chart-4: 25 95% 53%;
-    --chart-5: 349 75% 54%;
+        --chart-1: 221 83% 53%;
+        --chart-2: 160 72% 42%;
+        --chart-3: 262 80% 60%;
+        --chart-4: 35 95% 55%;
+        --chart-5: 349 80% 57%;
 
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
+        --success: 160 72% 42%;
+        --success-foreground: 0 0% 100%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+        /* Градиенты для карточек */
+        --grad-blue: linear-gradient(135deg, hsl(221 83% 53% / 0.12), hsl(221 83% 53% / 0.04));
+        --grad-green: linear-gradient(135deg, hsl(160 72% 42% / 0.12), hsl(160 72% 42% / 0.04));
+        --grad-purple: linear-gradient(135deg, hsl(262 80% 60% / 0.12), hsl(262 80% 60% / 0.04));
+        --grad-amber: linear-gradient(135deg, hsl(35 95% 55% / 0.12), hsl(35 95% 55% / 0.04));
+        --grad-rose: linear-gradient(135deg, hsl(349 80% 57% / 0.12), hsl(349 80% 57% / 0.04));
+
+        --sidebar-background: 224 20% 97%;
+        --sidebar-foreground: 224 40% 10%;
+        --sidebar-primary: 221 83% 53%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 224 20% 93%;
+        --sidebar-accent-foreground: 224 40% 10%;
+        --sidebar-border: 224 15% 89%;
+        --sidebar-ring: 221 83% 53%;
+    }
+
+    .dark {
+        --background: 224 25% 10%;
+        --foreground: 224 15% 92%;
+
+        --card: 224 22% 14%;
+        --card-foreground: 224 15% 92%;
+
+        --popover: 224 22% 14%;
+        --popover-foreground: 224 15% 92%;
+
+        --primary: 221 83% 60%;
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 224 22% 18%;
+        --secondary-foreground: 224 15% 92%;
+
+        --muted: 224 22% 18%;
+        --muted-foreground: 224 10% 55%;
+
+        --accent: 262 80% 65%;
+        --accent-foreground: 0 0% 100%;
+
+        --destructive: 0 72% 55%;
+        --destructive-foreground: 0 0% 100%;
+
+        --border: 224 20% 20%;
+        --input: 224 20% 20%;
+        --ring: 221 83% 60%;
+
+        --chart-1: 221 83% 60%;
+        --chart-2: 160 65% 50%;
+        --chart-3: 262 80% 65%;
+        --chart-4: 35 95% 60%;
+        --chart-5: 349 80% 62%;
+
+        --grad-blue: linear-gradient(135deg, hsl(221 83% 60% / 0.18), hsl(221 83% 60% / 0.06));
+        --grad-green: linear-gradient(135deg, hsl(160 65% 50% / 0.18), hsl(160 65% 50% / 0.06));
+        --grad-purple: linear-gradient(135deg, hsl(262 80% 65% / 0.18), hsl(262 80% 65% / 0.06));
+        --grad-amber: linear-gradient(135deg, hsl(35 95% 60% / 0.18), hsl(35 95% 60% / 0.06));
+        --grad-rose: linear-gradient(135deg, hsl(349 80% 62% / 0.18), hsl(349 80% 62% / 0.06));
+
+        --sidebar-background: 224 25% 10%;
+        --sidebar-foreground: 224 15% 92%;
+        --sidebar-primary: 221 83% 60%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 224 22% 18%;
+        --sidebar-accent-foreground: 224 15% 92%;
+        --sidebar-border: 224 20% 20%;
+        --sidebar-ring: 221 83% 60%;
+    }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+    * {
+        @apply border-border;
+    }
 
-  body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
-  }
+    html {
+        scroll-behavior: smooth;
+    }
 
-  .font-mono {
-    font-family: 'JetBrains Mono', monospace;
-  }
+    body {
+        @apply bg-background text-foreground font-sans antialiased;
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .font-mono {
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Кастомный скроллбар */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-border rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-muted-foreground/40;
+    }
 }
 
 @layer utilities {
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-  }
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+    }
 
-  .stat-value {
-    @apply font-mono text-2xl font-semibold tracking-tight;
-  }
+    .stat-value {
+        @apply font-mono text-2xl font-semibold tracking-tight;
+    }
 
-  .card-hover {
-    @apply transition-all duration-200 ease-out;
-  }
+    /* Карточка с hover-lift эффектом */
+    .card-hover {
+        @apply transition-all duration-200 ease-out;
+    }
 
-  .card-hover:hover {
-    @apply shadow-lg border-primary/30;
-    transform: translateY(-2px);
-  }
+    .card-hover:hover {
+        @apply shadow-lg shadow-black/5 border-primary/30;
+        transform: translateY(-2px);
+    }
+
+    /* Анимация появления */
+    .fade-in {
+        animation: fadeIn 0.35s ease-out both;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Анимация счётчика */
+    .count-up {
+        animation: countUp 0.6s ease-out both;
+    }
+
+    @keyframes countUp {
+        from {
+            opacity: 0;
+            transform: scale(0.92);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* Пульсация для критических алертов */
+    .pulse-alert {
+        animation: pulseAlert 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseAlert {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.65;
+        }
+    }
+
+    /* Градиентные фоны карточек */
+    .grad-blue {
+        background: var(--grad-blue);
+    }
+
+    .grad-green {
+        background: var(--grad-green);
+    }
+
+    .grad-purple {
+        background: var(--grad-purple);
+    }
+
+    .grad-amber {
+        background: var(--grad-amber);
+    }
+
+    .grad-rose {
+        background: var(--grad-rose);
+    }
+
+    /* Стеклянный эффект для header */
+    .glass {
+        @apply bg-card/80 backdrop-blur-md;
+    }
+
+    /* Подсветка активной вкладки */
+    .tab-active-glow {
+        box-shadow: 0 0 0 1px hsl(var(--primary) / 0.3),
+            0 2px 8px hsl(var(--primary) / 0.15);
+    }
 }

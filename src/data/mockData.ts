@@ -1,3 +1,62 @@
+// ─── Менеджеры (отдел продаж) ───────────────────────────────────────────────
+export interface Manager {
+    id: string;
+    name: string;
+    revenue: number;
+    deals: number;
+    avgCheck: number;
+    conversion: number; // %
+    avgCycleDays: number; // средний цикл сделки
+}
+
+// ─── Воронка продаж ──────────────────────────────────────────────────────────
+export interface FunnelStage {
+    stage: string;
+    count: number;
+    color: string;
+}
+
+// ─── Маркетинговые каналы ────────────────────────────────────────────────────
+export interface MarketingChannel {
+    channel: string;
+    leads: number;
+    spend: number;       // расходы в KGS
+    revenue: number;     // выручка в KGS
+    roi: number;         // (revenue - spend) / spend * 100
+    conversion: number;  // лид → сделка %
+    costPerLead: number; // spend / leads
+}
+
+// ─── Проекты разработки ──────────────────────────────────────────────────────
+export interface DevProject {
+    id: string;
+    name: string;
+    status: 'active' | 'completed' | 'overdue' | 'at_risk';
+    deadline: string;
+    daysLeft: number;
+    teamLoad: number;    // загрузка команды %
+    tasksInProgress: number;
+    overBudget: boolean;
+}
+
+// ─── Плановые vs фактические данные ─────────────────────────────────────────
+export interface MonthlyPlanFact {
+    month: string;
+    plan: number;
+    fact: number;
+    fulfillment: number; // fact / plan * 100
+}
+
+// ─── Зависшие сделки ─────────────────────────────────────────────────────────
+export interface StuckDeal {
+    id: string;
+    clientName: string;
+    amount: number;
+    daysSinceLastActivity: number;
+    manager: string;
+    stage: string;
+}
+
 export interface Product {
     id: string;
     name: string;
@@ -52,6 +111,12 @@ export const SIMULATE_DATA_ERROR = false;
 
 // Test accounts for different roles
 export const testAccounts = {
+    ceo: {
+        email: 'ceo@example.com',
+        password: 'ceo123',
+        fullName: 'Генеральный Директор',
+        description: 'Стратегический дашборд: все 5 вкладок, все данные'
+    },
     admin: {
         email: 'admin@example.com',
         password: 'admin123',
@@ -211,4 +276,87 @@ export function formatCurrency(value: number): string {
 
 export function formatNumber(value: number): string {
     return value.toLocaleString('ru-RU').replace(/\s/g, ' ');
+}
+
+// ─── Топ-менеджеры по продажам ───────────────────────────────────────────────
+export const managers: Manager[] = [
+    { id: 'm1', name: 'Айгерим Сатарова', revenue: 3_450_000, deals: 78, avgCheck: 44_230, conversion: 68, avgCycleDays: 12 },
+    { id: 'm2', name: 'Дамир Болотбеков', revenue: 2_980_000, deals: 65, avgCheck: 45_846, conversion: 61, avgCycleDays: 15 },
+    { id: 'm3', name: 'Нурбек Алиев', revenue: 2_640_000, deals: 91, avgCheck: 29_011, conversion: 72, avgCycleDays: 9 },
+    { id: 'm4', name: 'Зарина Исакова', revenue: 2_210_000, deals: 54, avgCheck: 40_926, conversion: 55, avgCycleDays: 18 },
+    { id: 'm5', name: 'Эркин Жумабеков', revenue: 1_870_000, deals: 83, avgCheck: 22_530, conversion: 79, avgCycleDays: 8 },
+    { id: 'm6', name: 'Гульмира Токтомат', revenue: 1_620_000, deals: 47, avgCheck: 34_468, conversion: 58, avgCycleDays: 14 },
+];
+
+// ─── Воронка продаж ──────────────────────────────────────────────────────────
+export const salesFunnel: FunnelStage[] = [
+    { stage: 'Лиды', count: 1240, color: 'hsl(217, 91%, 60%)' },
+    { stage: 'Квалификация', count: 892, color: 'hsl(217, 91%, 65%)' },
+    { stage: 'Предложение', count: 534, color: 'hsl(217, 91%, 70%)' },
+    { stage: 'Переговоры', count: 318, color: 'hsl(217, 91%, 75%)' },
+    { stage: 'Закрытие', count: 418, color: 'hsl(217, 91%, 80%)' },
+];
+
+// ─── Зависшие сделки ─────────────────────────────────────────────────────────
+export const stuckDeals: StuckDeal[] = [
+    { id: 'sd1', clientName: 'ООО Техно Центр', amount: 780_000, daysSinceLastActivity: 21, manager: 'Дамир Болотбеков', stage: 'Переговоры' },
+    { id: 'sd2', clientName: 'АО Бишкек Строй', amount: 450_000, daysSinceLastActivity: 18, manager: 'Зарина Исакова', stage: 'Предложение' },
+    { id: 'sd3', clientName: 'ТОО Агро Плюс', amount: 330_000, daysSinceLastActivity: 15, manager: 'Айгерим Сатарова', stage: 'Квалификация' },
+    { id: 'sd4', clientName: 'АО Медиа Групп', amount: 920_000, daysSinceLastActivity: 25, manager: 'Нурбек Алиев', stage: 'Переговоры' },
+    { id: 'sd5', clientName: 'ООО Логистик Юг', amount: 210_000, daysSinceLastActivity: 30, manager: 'Эркин Жумабеков', stage: 'Закрытие' },
+];
+
+// ─── Маркетинговые каналы ────────────────────────────────────────────────────
+export const marketingChannels: MarketingChannel[] = [
+    { channel: 'Google Ads', leads: 430, spend: 520_000, revenue: 2_340_000, roi: 350, conversion: 34, costPerLead: 1_209 },
+    { channel: 'Facebook Ads', leads: 310, spend: 380_000, revenue: 1_560_000, roi: 311, conversion: 28, costPerLead: 1_226 },
+    { channel: 'SEO', leads: 280, spend: 120_000, revenue: 1_890_000, roi: 1475, conversion: 42, costPerLead: 429 },
+    { channel: 'Email', leads: 195, spend: 45_000, revenue: 870_000, roi: 1833, conversion: 38, costPerLead: 231 },
+    { channel: 'Партнеры', leads: 150, spend: 230_000, revenue: 1_120_000, roi: 387, conversion: 45, costPerLead: 1_533 },
+    { channel: 'Холодные', leads: 210, spend: 290_000, revenue: 780_000, roi: 169, conversion: 18, costPerLead: 1_381 },
+];
+
+// ─── Проекты разработки ──────────────────────────────────────────────────────
+export const devProjects: DevProject[] = [
+    { id: 'dp1', name: 'CRM 3.0 Migration', status: 'active', deadline: '2026-04-15', daysLeft: 49, teamLoad: 87, tasksInProgress: 14, overBudget: false },
+    { id: 'dp2', name: 'API Интеграция Bitrix', status: 'at_risk', deadline: '2026-03-05', daysLeft: 8, teamLoad: 95, tasksInProgress: 21, overBudget: true },
+    { id: 'dp3', name: 'Мобильное приложение', status: 'active', deadline: '2026-05-30', daysLeft: 94, teamLoad: 72, tasksInProgress: 9, overBudget: false },
+    { id: 'dp4', name: 'Аналитика v2', status: 'overdue', deadline: '2026-01-31', daysLeft: -25, teamLoad: 60, tasksInProgress: 6, overBudget: true },
+    { id: 'dp5', name: 'Онбординг клиентов', status: 'completed', deadline: '2026-02-10', daysLeft: 0, teamLoad: 0, tasksInProgress: 0, overBudget: false },
+    { id: 'dp6', name: 'Дашборд CEO', status: 'active', deadline: '2026-03-20', daysLeft: 23, teamLoad: 80, tasksInProgress: 11, overBudget: false },
+    { id: 'dp7', name: 'SSO Авторизация', status: 'at_risk', deadline: '2026-03-10', daysLeft: 13, teamLoad: 91, tasksInProgress: 17, overBudget: false },
+    { id: 'dp8', name: 'ERP Интеграция', status: 'completed', deadline: '2026-01-20', daysLeft: 0, teamLoad: 0, tasksInProgress: 0, overBudget: true },
+];
+
+// ─── Плановые vs фактические данные ─────────────────────────────────────────
+export const monthlyPlanFact: MonthlyPlanFact[] = [
+    { month: 'Янв', plan: 3_500_000, fact: 3_210_000, fulfillment: 91.7 },
+    { month: 'Фев', plan: 3_700_000, fact: 4_050_000, fulfillment: 109.5 },
+    { month: 'Мар', plan: 4_000_000, fact: 3_780_000, fulfillment: 94.5 },
+    { month: 'Апр', plan: 4_200_000, fact: 4_560_000, fulfillment: 108.6 },
+    { month: 'Май', plan: 4_500_000, fact: 4_320_000, fulfillment: 96.0 },
+    { month: 'Июн', plan: 4_800_000, fact: 5_100_000, fulfillment: 106.3 },
+    { month: 'Июл', plan: 4_600_000, fact: 4_230_000, fulfillment: 91.9 },
+    { month: 'Авг', plan: 4_700_000, fact: 4_980_000, fulfillment: 105.9 },
+    { month: 'Сен', plan: 5_000_000, fact: 5_340_000, fulfillment: 106.8 },
+    { month: 'Окт', plan: 5_200_000, fact: 4_890_000, fulfillment: 94.0 },
+    { month: 'Ноя', plan: 5_500_000, fact: 5_870_000, fulfillment: 106.7 },
+    { month: 'Дек', plan: 6_000_000, fact: 6_450_000, fulfillment: 107.5 },
+];
+
+// ─── KPI данные (текущий период vs предыдущий) ───────────────────────────────
+export const kpiData = {
+    totalRevenue: { current: 57_780_000, previous: 51_200_000 },
+    closedDeals: { current: 418, previous: 382 },
+    avgCheck: { current: 138_230, previous: 134_010 },
+    grossMargin: { current: 34.2, previous: 31.8 },   // %
+    leads: { current: 1_575, previous: 1_380 },
+    conversionRate: { current: 26.5, previous: 27.7 },   // %
+    adSpend: { current: 1_585_000, previous: 1_420_000 },
+};
+
+/** Рассчитывает % изменения */
+export function calcChange(current: number, previous: number): number {
+    if (previous === 0) return 0;
+    return ((current - previous) / previous) * 100;
 }
