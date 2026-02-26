@@ -372,7 +372,7 @@ const Index = () => {
               <TabsList className="h-9">
                 {visibleTabs.includes('executive') && (
                   <TabsTrigger value="executive" className="text-xs gap-1.5">
-                    <BarChart2 className="w-3.5 h-3.5" />Executive Summary
+                    <BarChart2 className="w-3.5 h-3.5" />Сводка
                   </TabsTrigger>
                 )}
                 {visibleTabs.includes('finance') && (
@@ -397,7 +397,7 @@ const Index = () => {
                 )}
               </TabsList>
 
-              {/* ══ EXECUTIVE SUMMARY ══ */}
+              {/* ══ СВОДКА ══ */}
               <TabsContent value="executive" className="mt-5 space-y-6">
                 <p className="text-xs text-muted-foreground">
                   Период: <span className="font-medium text-foreground">{periodLabels[globalPeriod]}</span>
