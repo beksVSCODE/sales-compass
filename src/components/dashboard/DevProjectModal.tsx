@@ -58,7 +58,9 @@ export function DevProjectModal({ project, onClose }: DevProjectModalProps) {
 
     return (
         <Dialog open={!!project} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+                {/* ── Скроллируемое тело ── */}
+                <div className="overflow-y-auto flex-1 space-y-4 pr-1">
                 {/* ── Заголовок ── */}
                 <DialogHeader className="pr-6">
                     <div className="flex items-start gap-3">
@@ -242,6 +244,7 @@ export function DevProjectModal({ project, onClose }: DevProjectModalProps) {
                             </div>
                         );
                     })}
+                </div>
                 </div>
             </DialogContent>
         </Dialog>
