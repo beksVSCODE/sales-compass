@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { devProjects, type DevProject } from '@/data/mockData';
 import { Code2, AlertTriangle, CheckCircle2, Clock, XCircle, Flame } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DevProjectModal } from './DevProjectModal';
 
 const statusConfig: Record<
   DevProject['status'],
@@ -13,6 +15,8 @@ const statusConfig: Record<
 };
 
 export function DevProjects() {
+  const [selectedProject, setSelectedProject] = useState<DevProject | null>(null);
+
   const active    = devProjects.filter((p) => p.status === 'active').length;
   const completed = devProjects.filter((p) => p.status === 'completed').length;
   const overdue   = devProjects.filter((p) => p.status === 'overdue').length;
@@ -88,8 +92,12 @@ export function DevProjects() {
           return (
             <div
               key={p.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedProject(p)}
+              onKeyDown={(e) => e.key === 'Enter' && setSelectedProject(p)}
               className={cn(
-                'group flex items-center justify-between rounded-xl border px-3 py-2.5 text-xs transition-all hover:shadow-sm',
+                'group flex items-center justify-between rounded-xl border px-3 py-2.5 text-xs transition-all hover:shadow-sm cursor-pointer select-none',
                 cfg.border, cfg.bg
               )}
             >
@@ -147,6 +155,11 @@ export function DevProjects() {
           );
         })}
       </div>
+
+      <DevProjectModal
+        project={selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
     </div>
   );
 }

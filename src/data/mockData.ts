@@ -28,15 +28,31 @@ export interface MarketingChannel {
 }
 
 // ─── Проекты разработки ──────────────────────────────────────────────────────
+export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done' | 'blocked';
+export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
+
+export interface DevTask {
+    id: string;
+    title: string;
+    status: TaskStatus;
+    assignee: string;
+    priority: TaskPriority;
+    dueDate: string | null;
+    url?: string;
+}
+
 export interface DevProject {
     id: string;
     name: string;
+    description: string;
     status: 'active' | 'completed' | 'overdue' | 'at_risk';
+    startDate: string;
     deadline: string;
     daysLeft: number;
     teamLoad: number;    // загрузка команды %
     tasksInProgress: number;
     overBudget: boolean;
+    tasks: DevTask[];
 }
 
 // ─── Плановые vs фактические данные ─────────────────────────────────────────
@@ -318,14 +334,158 @@ export const marketingChannels: MarketingChannel[] = [
 
 // ─── Проекты разработки ──────────────────────────────────────────────────────
 export const devProjects: DevProject[] = [
-    { id: 'dp1', name: 'CRM 3.0 Migration', status: 'active', deadline: '2026-04-15', daysLeft: 49, teamLoad: 87, tasksInProgress: 14, overBudget: false },
-    { id: 'dp2', name: 'API Интеграция Bitrix', status: 'at_risk', deadline: '2026-03-05', daysLeft: 8, teamLoad: 95, tasksInProgress: 21, overBudget: true },
-    { id: 'dp3', name: 'Мобильное приложение', status: 'active', deadline: '2026-05-30', daysLeft: 94, teamLoad: 72, tasksInProgress: 9, overBudget: false },
-    { id: 'dp4', name: 'Аналитика v2', status: 'overdue', deadline: '2026-01-31', daysLeft: -25, teamLoad: 60, tasksInProgress: 6, overBudget: true },
-    { id: 'dp5', name: 'Онбординг клиентов', status: 'completed', deadline: '2026-02-10', daysLeft: 0, teamLoad: 0, tasksInProgress: 0, overBudget: false },
-    { id: 'dp6', name: 'Дашборд CEO', status: 'active', deadline: '2026-03-20', daysLeft: 23, teamLoad: 80, tasksInProgress: 11, overBudget: false },
-    { id: 'dp7', name: 'SSO Авторизация', status: 'at_risk', deadline: '2026-03-10', daysLeft: 13, teamLoad: 91, tasksInProgress: 17, overBudget: false },
-    { id: 'dp8', name: 'ERP Интеграция', status: 'completed', deadline: '2026-01-20', daysLeft: 0, teamLoad: 0, tasksInProgress: 0, overBudget: true },
+    {
+        id: 'dp1',
+        name: 'CRM 3.0 Migration',
+        description: 'Полная миграция CRM-системы на версию 3.0: обновление схемы БД, рефакторинг REST API и обновление UI-компонентов.',
+        status: 'active',
+        startDate: '2026-01-10',
+        deadline: '2026-04-15',
+        daysLeft: 49,
+        teamLoad: 87,
+        tasksInProgress: 14,
+        overBudget: false,
+        tasks: [
+            { id: 't1-1', title: 'Миграция схемы БД PostgreSQL', status: 'done', assignee: 'Айбек Джакыпов', priority: 'critical', dueDate: '2026-02-01', url: 'https://jira.example.com/CRM-101' },
+            { id: 't1-2', title: 'Рефакторинг REST API', status: 'in_progress', assignee: 'Тимур Садыков', priority: 'high', dueDate: '2026-03-15', url: 'https://jira.example.com/CRM-102' },
+            { id: 't1-3', title: 'Обновление UI-компонентов', status: 'in_progress', assignee: 'Алина Бекова', priority: 'high', dueDate: '2026-03-25', url: 'https://jira.example.com/CRM-103' },
+            { id: 't1-4', title: 'Написание unit-тестов', status: 'review', assignee: 'Канат Усупов', priority: 'medium', dueDate: '2026-04-01', url: 'https://jira.example.com/CRM-104' },
+            { id: 't1-5', title: 'Нагрузочное тестирование', status: 'todo', assignee: 'Тимур Садыков', priority: 'high', dueDate: '2026-04-08', url: 'https://jira.example.com/CRM-105' },
+            { id: 't1-6', title: 'Документация для разработчиков', status: 'in_progress', assignee: 'Алина Бекова', priority: 'low', dueDate: '2026-04-10', url: 'https://jira.example.com/CRM-106' },
+        ],
+    },
+    {
+        id: 'dp2',
+        name: 'API Интеграция Bitrix',
+        description: 'Интеграция с Bitrix24 через REST API: синхронизация сделок, контактов и активностей в режиме реального времени через webhook.',
+        status: 'at_risk',
+        startDate: '2026-01-20',
+        deadline: '2026-03-05',
+        daysLeft: 8,
+        teamLoad: 95,
+        tasksInProgress: 21,
+        overBudget: true,
+        tasks: [
+            { id: 't2-1', title: 'OAuth2 аутентификация Bitrix', status: 'done', assignee: 'Нурлан Омуров', priority: 'critical', dueDate: '2026-02-05', url: 'https://jira.example.com/BIT-201' },
+            { id: 't2-2', title: 'Синхронизация контактов', status: 'in_progress', assignee: 'Нурлан Омуров', priority: 'critical', dueDate: '2026-02-28', url: 'https://jira.example.com/BIT-202' },
+            { id: 't2-3', title: 'Маппинг полей сделок', status: 'in_progress', assignee: 'Динара Токоева', priority: 'high', dueDate: '2026-03-01', url: 'https://jira.example.com/BIT-203' },
+            { id: 't2-4', title: 'Webhook обработка событий', status: 'blocked', assignee: 'Динара Токоева', priority: 'critical', dueDate: '2026-03-03', url: 'https://jira.example.com/BIT-204' },
+            { id: 't2-5', title: 'Тестирование интеграции', status: 'todo', assignee: 'Канат Усупов', priority: 'high', dueDate: '2026-03-04', url: 'https://jira.example.com/BIT-205' },
+        ],
+    },
+    {
+        id: 'dp3',
+        name: 'Мобильное приложение',
+        description: 'Кроссплатформенное мобильное приложение на React Native для менеджеров по продажам: просмотр KPI, управление сделками, push-уведомления.',
+        status: 'active',
+        startDate: '2026-01-15',
+        deadline: '2026-05-30',
+        daysLeft: 94,
+        teamLoad: 72,
+        tasksInProgress: 9,
+        overBudget: false,
+        tasks: [
+            { id: 't3-1', title: 'Прототип iOS-интерфейса', status: 'done', assignee: 'Алина Бекова', priority: 'high', dueDate: '2026-02-15', url: 'https://jira.example.com/MOB-301' },
+            { id: 't3-2', title: 'Android-сборка и тесты', status: 'in_progress', assignee: 'Айбек Джакыпов', priority: 'high', dueDate: '2026-03-20', url: 'https://jira.example.com/MOB-302' },
+            { id: 't3-3', title: 'Интеграция авторизации SSO', status: 'in_progress', assignee: 'Тимур Садыков', priority: 'medium', dueDate: '2026-03-30', url: 'https://jira.example.com/MOB-303' },
+            { id: 't3-4', title: 'Push-уведомления', status: 'todo', assignee: 'Айбек Джакыпов', priority: 'medium', dueDate: '2026-04-20', url: 'https://jira.example.com/MOB-304' },
+            { id: 't3-5', title: 'Оффлайн-режим (кэш данных)', status: 'todo', assignee: 'Динара Токоева', priority: 'low', dueDate: '2026-05-10', url: 'https://jira.example.com/MOB-305' },
+            { id: 't3-6', title: 'Бета-тестирование', status: 'todo', assignee: 'Канат Усупов', priority: 'high', dueDate: '2026-05-25', url: 'https://jira.example.com/MOB-306' },
+        ],
+    },
+    {
+        id: 'dp4',
+        name: 'Аналитика v2',
+        description: 'Переработка модуля аналитики: новые интерактивные дашборды, экспорт данных в Excel/PDF, интеграция с Data Warehouse.',
+        status: 'overdue',
+        startDate: '2025-11-01',
+        deadline: '2026-01-31',
+        daysLeft: -25,
+        teamLoad: 60,
+        tasksInProgress: 6,
+        overBudget: true,
+        tasks: [
+            { id: 't4-1', title: 'Настройка Data Warehouse', status: 'in_progress', assignee: 'Тимур Садыков', priority: 'critical', dueDate: '2026-01-15', url: 'https://jira.example.com/ANA-401' },
+            { id: 't4-2', title: 'Редизайн графиков и чартов', status: 'review', assignee: 'Алина Бекова', priority: 'high', dueDate: '2026-01-20', url: 'https://jira.example.com/ANA-402' },
+            { id: 't4-3', title: 'Экспорт в Excel / PDF', status: 'in_progress', assignee: 'Нурлан Омуров', priority: 'medium', dueDate: '2026-01-25', url: 'https://jira.example.com/ANA-403' },
+            { id: 't4-4', title: 'Пользовательское тестирование', status: 'blocked', assignee: 'Динара Токоева', priority: 'high', dueDate: '2026-01-28', url: 'https://jira.example.com/ANA-404' },
+            { id: 't4-5', title: 'Оптимизация SQL-запросов', status: 'in_progress', assignee: 'Айбек Джакыпов', priority: 'high', dueDate: '2026-01-30', url: 'https://jira.example.com/ANA-405' },
+        ],
+    },
+    {
+        id: 'dp5',
+        name: 'Онбординг клиентов',
+        description: 'Автоматизированный онбординг для новых клиентов: пошаговые руководства, email-цепочки, интерактивные туры по продукту.',
+        status: 'completed',
+        startDate: '2025-12-01',
+        deadline: '2026-02-10',
+        daysLeft: 0,
+        teamLoad: 0,
+        tasksInProgress: 0,
+        overBudget: false,
+        tasks: [
+            { id: 't5-1', title: 'Email-цепочки приветствия', status: 'done', assignee: 'Алина Бекова', priority: 'high', dueDate: '2026-01-10', url: 'https://jira.example.com/ONB-501' },
+            { id: 't5-2', title: 'Интерактивные туры по продукту', status: 'done', assignee: 'Динара Токоева', priority: 'medium', dueDate: '2026-01-20', url: 'https://jira.example.com/ONB-502' },
+            { id: 't5-3', title: 'База знаний и FAQ', status: 'done', assignee: 'Нурлан Омуров', priority: 'low', dueDate: '2026-01-30', url: 'https://jira.example.com/ONB-503' },
+            { id: 't5-4', title: 'Аналитика онбординга', status: 'done', assignee: 'Тимур Садыков', priority: 'medium', dueDate: '2026-02-05', url: 'https://jira.example.com/ONB-504' },
+        ],
+    },
+    {
+        id: 'dp6',
+        name: 'Дашборд CEO',
+        description: 'Стратегический дашборд для генерального директора: KPI-сводка, план/факт, прогнозы выручки на основе ML.',
+        status: 'active',
+        startDate: '2026-02-01',
+        deadline: '2026-03-20',
+        daysLeft: 23,
+        teamLoad: 80,
+        tasksInProgress: 11,
+        overBudget: false,
+        tasks: [
+            { id: 't6-1', title: 'Виджеты KPI и сводных показателей', status: 'in_progress', assignee: 'Айбек Джакыпов', priority: 'critical', dueDate: '2026-03-01', url: 'https://jira.example.com/CEO-601' },
+            { id: 't6-2', title: 'Пайплайн данных (ETL)', status: 'in_progress', assignee: 'Тимур Садыков', priority: 'high', dueDate: '2026-03-05', url: 'https://jira.example.com/CEO-602' },
+            { id: 't6-3', title: 'Экспорт дашборда в PDF', status: 'review', assignee: 'Алина Бекова', priority: 'medium', dueDate: '2026-03-10', url: 'https://jira.example.com/CEO-603' },
+            { id: 't6-4', title: 'Ролевой доступ к данным', status: 'in_progress', assignee: 'Нурлан Омуров', priority: 'high', dueDate: '2026-03-15', url: 'https://jira.example.com/CEO-604' },
+            { id: 't6-5', title: 'Прогнозирование выручки (ML)', status: 'todo', assignee: 'Тимур Садыков', priority: 'medium', dueDate: '2026-03-18', url: 'https://jira.example.com/CEO-605' },
+        ],
+    },
+    {
+        id: 'dp7',
+        name: 'SSO Авторизация',
+        description: 'Внедрение единой точки входа (SSO): поддержка SAML 2.0, синхронизация LDAP, управление корпоративными сессиями.',
+        status: 'at_risk',
+        startDate: '2026-01-25',
+        deadline: '2026-03-10',
+        daysLeft: 13,
+        teamLoad: 91,
+        tasksInProgress: 17,
+        overBudget: false,
+        tasks: [
+            { id: 't7-1', title: 'SAML 2.0 провайдер', status: 'in_progress', assignee: 'Нурлан Омуров', priority: 'critical', dueDate: '2026-02-25', url: 'https://jira.example.com/SSO-701' },
+            { id: 't7-2', title: 'LDAP синхронизация пользователей', status: 'in_progress', assignee: 'Айбек Джакыпов', priority: 'critical', dueDate: '2026-02-28', url: 'https://jira.example.com/SSO-702' },
+            { id: 't7-3', title: 'Управление сессиями', status: 'blocked', assignee: 'Тимур Садыков', priority: 'high', dueDate: '2026-03-03', url: 'https://jira.example.com/SSO-703' },
+            { id: 't7-4', title: 'Аудит безопасности', status: 'todo', assignee: 'Канат Усупов', priority: 'critical', dueDate: '2026-03-07', url: 'https://jira.example.com/SSO-704' },
+            { id: 't7-5', title: 'Документация и интеграционные тесты', status: 'todo', assignee: 'Динара Токоева', priority: 'medium', dueDate: '2026-03-09', url: 'https://jira.example.com/SSO-705' },
+        ],
+    },
+    {
+        id: 'dp8',
+        name: 'ERP Интеграция',
+        description: 'Двусторонняя интеграция с ERP-системой: синхронизация номенклатуры, складских остатков и платёжных данных.',
+        status: 'completed',
+        startDate: '2025-10-01',
+        deadline: '2026-01-20',
+        daysLeft: 0,
+        teamLoad: 0,
+        tasksInProgress: 0,
+        overBudget: true,
+        tasks: [
+            { id: 't8-1', title: 'Синхронизация номенклатуры', status: 'done', assignee: 'Нурлан Омуров', priority: 'high', dueDate: '2025-11-15', url: 'https://jira.example.com/ERP-801' },
+            { id: 't8-2', title: 'Складские остатки (real-time)', status: 'done', assignee: 'Айбек Джакыпов', priority: 'critical', dueDate: '2025-12-01', url: 'https://jira.example.com/ERP-802' },
+            { id: 't8-3', title: 'Платёжные данные и выставление счетов', status: 'done', assignee: 'Тимур Садыков', priority: 'high', dueDate: '2025-12-20', url: 'https://jira.example.com/ERP-803' },
+            { id: 't8-4', title: 'Мониторинг и алерты синхронизации', status: 'done', assignee: 'Динара Токоева', priority: 'medium', dueDate: '2026-01-10', url: 'https://jira.example.com/ERP-804' },
+        ],
+    },
 ];
 
 // ─── Плановые vs фактические данные ─────────────────────────────────────────
